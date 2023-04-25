@@ -6,13 +6,13 @@
 
 #include "Chip8.hpp"
 
-#include "tools/utils/Files.hpp"
-#include "tools/utils/Scheduler.hpp"
-#include "tools/utils/Stopwatch.hpp"
+#include "files.hpp"
+#include "Scheduler.hpp"
+#include "Stopwatch.hpp"
 
-#include "tools/sdl/InputMapper.hpp"
-#include "tools/sdl/Sound.hpp"
-#include "tools/sdl/Window.hpp"
+#include "sdl/InputMapper.hpp"
+#include "sdl/Sound.hpp"
+#include "sdl/Window.hpp"
 
 void log_init() {
     #ifdef DEBUG
@@ -67,22 +67,22 @@ int main(int argc, char **argv) {
     uint8_t pixel_height = 20;
 
     tools::sdl::InputMapper mapper;
-    mapper.add_mapping("1", 0x1);
-    mapper.add_mapping("2", 0x2);
-    mapper.add_mapping("3", 0x3);
-    mapper.add_mapping("4", 0xc);
-    mapper.add_mapping("A", 0x4);
-    mapper.add_mapping("Z", 0x5);
-    mapper.add_mapping("E", 0x6);
-    mapper.add_mapping("R", 0xd);
-    mapper.add_mapping("Q", 0x7);
-    mapper.add_mapping("S", 0x8);
-    mapper.add_mapping("D", 0x9);
-    mapper.add_mapping("F", 0xe);
-    mapper.add_mapping("W", 0xa);
-    mapper.add_mapping("X", 0x0);
-    mapper.add_mapping("C", 0xb);
-    mapper.add_mapping("V", 0xf);
+    mapper.set_mapping("1", 0x1);
+    mapper.set_mapping("2", 0x2);
+    mapper.set_mapping("3", 0x3);
+    mapper.set_mapping("4", 0xc);
+    mapper.set_mapping("A", 0x4);
+    mapper.set_mapping("Z", 0x5);
+    mapper.set_mapping("E", 0x6);
+    mapper.set_mapping("R", 0xd);
+    mapper.set_mapping("Q", 0x7);
+    mapper.set_mapping("S", 0x8);
+    mapper.set_mapping("D", 0x9);
+    mapper.set_mapping("F", 0xe);
+    mapper.set_mapping("W", 0xa);
+    mapper.set_mapping("X", 0x0);
+    mapper.set_mapping("C", 0xb);
+    mapper.set_mapping("V", 0xf);
 
     // Audio handling.
     tools::sdl::SoundPlayer sound_player;
@@ -104,7 +104,7 @@ int main(int argc, char **argv) {
 
     tools::utils::Task emulation_task;
     emulation_task.name = "Emulation task";
-    emulation_task.delay_us = 1000000 / timer_freq;
+    emulation_task.delay_ns = std::chrono::nanoseconds(1000000000 / timer_freq);
     emulation_task.task = [&]() {
         // Get duration since last loop in seconds.
         uint64_t duration = loop_stopwatch.get_duration();
@@ -152,7 +152,7 @@ int main(int argc, char **argv) {
     SDL_Event event;
     tools::utils::Task sdl_task;
     sdl_task.name = "SDL task";
-    sdl_task.delay_us = 1000000 / display_freq;
+    sdl_task.delay_ns = std::chrono::nanoseconds(1000000000 / display_freq);
     sdl_task.task = [&]() {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {

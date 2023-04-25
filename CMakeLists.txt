@@ -21,6 +21,25 @@ set(
     SRC
     src/main.cpp
     src/Chip8.cpp
+    src/files.cpp
+    src/Scheduler.cpp
+    src/Stopwatch.cpp
+    src/sdl/InputMapper.cpp
+    src/sdl/Sound.cpp
+    src/sdl/Window.cpp
 )
 
 add_executable(${PROJECT} ${SRC})
+
+target_include_directories(
+    ${PROJECT}
+    PRIVATE src
+)
+
+target_link_libraries(
+    ${PROJECT}
+    PRIVATE spdlog
+    PRIVATE fmt
+    PRIVATE SDL2
+    PRIVATE SDL2_ttf
+)

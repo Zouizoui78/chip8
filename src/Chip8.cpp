@@ -3,7 +3,7 @@
 #include "spdlog/spdlog.h"
 #include "spdlog/fmt/bin_to_hex.h"
 
-#include "tools/utils/Files.hpp"
+#include "files.hpp"
 
 #include <ctime>
 
@@ -115,7 +115,7 @@ void Chip8::dump_memory(const std::string &path) {
 
 void Chip8::log_v() {
     std::vector to_print(_v, _v + REGISTERS_SIZE);
-    SPDLOG_INFO("V = {}", spdlog::to_hex(to_print));
+    SPDLOG_DEBUG("V = {}", spdlog::to_hex(to_print));
 }
 
 const bool *Chip8::get_screen_buffer() {
