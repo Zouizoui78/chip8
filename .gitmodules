@@ -1,0 +1,3 @@
+[submodule "external/tools"]
+	path = external/tools
+	url = https://github.com/Zouizoui78/tools.git

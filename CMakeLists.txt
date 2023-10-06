@@ -21,12 +21,6 @@ set(
     SRC
     src/main.cpp
     src/Chip8.cpp
-    src/files.cpp
-    src/Scheduler.cpp
-    src/Stopwatch.cpp
-    src/sdl/InputMapper.cpp
-    src/sdl/Sound.cpp
-    src/sdl/Window.cpp
 )
 
 add_executable(${PROJECT} ${SRC})
@@ -36,18 +30,12 @@ target_include_directories(
     PRIVATE src
 )
 
-find_package(nlohmann_json CONFIG REQUIRED)
+add_subdirectory(external/tools)
 find_package(SDL2 CONFIG REQUIRED)
 find_package(SDL2_ttf CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 
-target_link_libraries(emu-chip8 PRIVATE spdlog::spdlog)
-
-target_link_libraries(
-    emu-chip8
-    PRIVATE
-    nlohmann_json::nlohmann_json
-)
+target_link_libraries(emu-chip8 PRIVATE tools-utils tools-sdl spdlog::spdlog)
 
 target_link_libraries(
     emu-chip8

@@ -6,13 +6,15 @@
 
 #include "Chip8.hpp"
 
-#include "files.hpp"
-#include "Scheduler.hpp"
-#include "Stopwatch.hpp"
+#include "tools/utils/fs.hpp"
+#include "tools/utils/Scheduler.hpp"
+#include "tools/utils/Stopwatch.hpp"
 
-#include "sdl/InputMapper.hpp"
-#include "sdl/Sound.hpp"
-#include "sdl/Window.hpp"
+#include "tools/sdl/InputMapper.hpp"
+#include "tools/sdl/WaveformPlayer.hpp"
+#include "tools/sdl/Window.hpp"
+
+#include "tools/waveform/Waveforms.hpp"
 
 void log_init() {
     #ifdef DEBUG
@@ -85,13 +87,13 @@ int main(int argc, char **argv) {
     mapper.set_mapping("V", 0xf);
 
     // Audio handling.
-    tools::sdl::SoundPlayer sound_player;
-    tools::sdl::Square square;
-    square.set_frequency(1000);
-    if (!sound_player.is_initialized())
+    auto generator = std::make_shared<tools::waveform::WaveformGenerator>();
+    tools::sdl::WaveformPlayer player(generator);
+    auto square_wave = std::make_shared<tools::waveform::Square>();
+    square_wave->set_frequency(440);
+    generator->add_waveform(square_wave);
+    if (!player.is_initialized())
         SPDLOG_ERROR("Failed to initialize audio.");
-    else
-        sound_player.add_sound(&square);
     ///////////////////////
 
     tools::sdl::Window w("Chip8", pixel_width * WIDTH, pixel_height * HEIGHT);
@@ -105,6 +107,7 @@ int main(int argc, char **argv) {
     tools::utils::Task emulation_task;
     emulation_task.name = "Emulation task";
     emulation_task.delay_ns = std::chrono::nanoseconds(1000000000 / timer_freq);
+    spdlog::info("emulation delay {}", emulation_task.delay_ns.count());
     emulation_task.task = [&]() {
         // Get duration since last loop in seconds.
         uint64_t duration = loop_stopwatch.get_duration();
@@ -114,9 +117,9 @@ int main(int argc, char **argv) {
         // Decrease timers.
         cpu.decrease_timers();
         if (cpu.get_sound_timer() > 0)
-            sound_player.play();
+            player.play();
         else
-            sound_player.pause();
+            player.pause();
         ++timer_count;
 
         // Compute how many instructions we
@@ -153,6 +156,7 @@ int main(int argc, char **argv) {
     tools::utils::Task sdl_task;
     sdl_task.name = "SDL task";
     sdl_task.delay_ns = std::chrono::nanoseconds(1000000000 / display_freq);
+    spdlog::info("emulation delay {}", sdl_task.delay_ns.count());
     sdl_task.task = [&]() {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {

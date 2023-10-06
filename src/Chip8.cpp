@@ -3,7 +3,7 @@
 #include "spdlog/spdlog.h"
 #include "spdlog/fmt/bin_to_hex.h"
 
-#include "files.hpp"
+#include "tools/utils/fs.hpp"
 
 #include <ctime>
 
@@ -83,7 +83,7 @@ bool Chip8::load_rom(const std::string &path) {
         return false;
     }
 
-    auto rom = tools::utils::files::read_binary_file(path);
+    auto rom = tools::fs::read_binary_file(path);
     if (rom.empty()) {
         SPDLOG_ERROR("Failed to load rom file '{}'.", path);
         return false;
