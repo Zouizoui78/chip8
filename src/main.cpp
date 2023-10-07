@@ -107,7 +107,6 @@ int main(int argc, char **argv) {
     tools::utils::Task emulation_task;
     emulation_task.name = "Emulation task";
     emulation_task.delay_ns = std::chrono::nanoseconds(1000000000 / timer_freq);
-    spdlog::info("emulation delay {}", emulation_task.delay_ns.count());
     emulation_task.task = [&]() {
         // Get duration since last loop in seconds.
         uint64_t duration = loop_stopwatch.get_duration();
@@ -156,7 +155,6 @@ int main(int argc, char **argv) {
     tools::utils::Task sdl_task;
     sdl_task.name = "SDL task";
     sdl_task.delay_ns = std::chrono::nanoseconds(1000000000 / display_freq);
-    spdlog::info("emulation delay {}", sdl_task.delay_ns.count());
     sdl_task.task = [&]() {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
